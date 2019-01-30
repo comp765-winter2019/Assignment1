@@ -1,0 +1,1 @@
+rostopic pub --once /aqua/target_pose geometry_msgs/PoseStamped '{ header: { seq: 0, stamp: 0, frame_id: 'florians_head_frame'}, pose: {position: {x: 0, y: 0, z: 0}, orientation: {x: 0, y: 0, z: 0, w: 1}}}'

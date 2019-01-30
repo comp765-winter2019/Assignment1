@@ -1,0 +1,59 @@
+<launch>
+
+  <include file="$(find aqua_gazebo)/launch/aqua.launch"/>
+  
+ 	<node pkg="aqua_rl" type="rbf_gait_node" name="rbf_gait_node">
+		<param name="pilco_root_path" value="$(find pilco_mrl_copy)"/>
+		<!--param name="experience_filename" value="/data/rbf_one_leg_policies/experience.h5"/-->
+		<param name="experience_filename" value="/media/diskstation/learn_to_swim/rbf_node_runs/sept11_working_yaw90_testing_calcCost/experience.h5"/>
+		<!--param name="experience_filename" value="/home/dpmeger/data/learn_to_swim/rbf_node_runs/sept11_working_yaw90_testing_calcCost/experience.h5"/-->
+		<param name="pilco_learning_script_path" value="$(find aqua_rl)/scripts/"/>
+		<param name="scenario_settings_file" value="settings_180_vel"/>
+		<param name="num_random_first_episodes" value="0"/>
+		<param name="pilco_learning_enabled" value="false"/>
+	</node>
+ 
+  <node pkg="aqua_gait" type="rbf_learner.py" name="rbf_learner" args="-p /media/diskstation/learn_to_swim/rbf_node_runs/sept11_working_yaw90_testing_calcCost/initial_policy_learning_iter_0.h5" output="log" />
+
+<!--
+Start the controller by hand once everyone else has initiated
+rosrun aqua_rl aqua_rl_controller _run_live:=True _initial_policy_param_file:=/media/diskstation/learn_to_swim/rbf_node_runs/sept11_working_yaw90_testing_calcCost/initial_policy_learning_iter_0.h5
+  <node pkg="aqua_rl" type="aqua_rl_controller" name="aqua_rl_controller" output="log">
+    <param name="run_live" value="false" />
+    <param name="episode_step_duration" value="0.1" />
+  </node>
+-->
+
+
+
+<arg name="bag.name" default="/localdata/learn_to_swim/rbf_twiddle/RBFLearner"/>
+<arg name="bag.topics"
+     default=
+     "
+/aqua/state
+/aqua/periodic_leg_command
+/aqua/target_pose
+/aqua/command
+/aqua/health
+/aqua/autopilot/status
+/aqua_rl/state
+/aqua_rl/new_episode
+/aqua_rl/run_live
+/aqua_rl/step
+/aqua_rl/reward
+/aqua_rl/terminate_episode
+/aqua_rl/critic_state
+/aqua_rl/learner_state
+/clock
+/rosout
+/rosout_agg
+/tf
+/tf_static
+     "/>
+
+<!--
+-->
+
+  <node pkg="rosbag" type="record" name="record" args="--output-prefix=$(arg bag.name) $(arg bag.topics)" />
+</launch>
+

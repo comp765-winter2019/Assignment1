@@ -1,0 +1,6 @@
+<launch>
+  <node pkg="aqua_utils" type="depth_emulator.py" name="depth_emulator" output="screen" />
+  <node pkg="aquadepth" type="depth_filter" name="depth_filter" output="screen" />
+  <node pkg="dynamic_reconfigure" type="reconfigure_gui" name="dyncfg" />
+  <node pkg="rxtools" type="rxplot" name="plot_depth_filter" args="/aqua/state/Depth /aqua/filtered_depth/data /aqua/constant_depth_flag/data" />
+</launch>

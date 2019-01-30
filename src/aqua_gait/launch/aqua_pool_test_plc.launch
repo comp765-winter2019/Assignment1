@@ -1,0 +1,67 @@
+<launch>
+  <node pkg="aquajoy" type="aqua_joy" name="aqua_joy" output="screen">
+    <remap from="joy" to="/joy" />
+    <remap from="command" to="/aqua/command" />
+    <remap from="target_pose" to="/aqua/target_pose" />
+    <remap from="get_state" to="/aqua/get_state" />
+    <remap from="set_autopilot_mode" to="/aqua/set_3Dauto_mode" />
+    <remap from="calibrate" to="/aqua/calibrate" />
+    <remap from="is_calibrated" to="/aqua/is_calibrated" />
+    <remap from="set_gait" to="/aqua/set_gait" />
+    <remap from="set_robodevel_autopilot_mode" to="/aqua/set_autopilot_mode" />
+        
+    <param name="joy_axis_deadzone" value="0.1" />
+    
+    <param name="max_speed_cmd" value="1.0" />
+    <param name="max_heave_cmd" value="1.0" />
+    <param name="max_roll_cmd"  value="1.0" />
+    <param name="max_pitch_cmd" value="1.0" />
+    <param name="max_yaw_cmd"   value="1.0" />
+
+    <param name="max_roll_pos"  value="90.0" />
+    <param name="max_pitch_pos" value="90.0" />
+    <param name="max_yaw_pos"   value="180.0" />
+
+    <param name="min_depth" value="0.0" />
+    <param name="max_depth" value="3.0" />
+
+    <param name="max_roll_vel"  value="300.0" />
+    <param name="max_pitch_vel" value="300.0" />
+    <param name="max_yaw_vel"   value="600.0" />
+
+    <param name="max_depth_vel" value="1.0" />
+    
+    <param name="use_flexible_sine_gait" value="true" />
+  </node>
+  
+  <node pkg="joy" type="joy_node" name="joy_node" output="screen">
+    <param name="dev" value="/dev/input/js1" />
+    <param name="deadzone" value="0.0" />
+  </node>
+  
+  <node pkg="aqua_gait" type="test_gaits_gui" name="test_gaits_gui" output="screen">
+  </node>
+
+<arg name="bag.name.offboard" default="/localdata/aqua_pool_test_plc"/>
+<arg name="bag.topics.offboard"
+     default=
+     "
+/aqua/state
+/aqua/periodic_leg_command
+/aqua/target_pose
+/aqua/command
+/aqua/health
+/aqua/autopilot/status
+/joy
+/clock
+/rosout
+/rosout_agg
+/tf
+/tf_static
+     "/>
+
+<!--
+-->
+
+  <node pkg="rosbag" type="record" name="record_offboard" args="--output-prefix=$(arg bag.name.offboard) $(arg bag.topics.offboard)" />
+</launch>

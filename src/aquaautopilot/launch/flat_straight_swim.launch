@@ -1,0 +1,8 @@
+<launch>
+   <arg name="speed" />
+   
+   <node pkg="aquaautopilot" type="coverage_ap_controller.py" name="coverage_ap_controller" >
+   	 <param name="speed" value="$(arg speed)" />	 
+   </node>
+	
+</launch>

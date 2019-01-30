@@ -1,0 +1,13 @@
+<launch>
+
+ <arg name="dz" />
+ <arg name="forward_speed" />
+ <arg name="forward_dt_in_sec" />
+ 
+ <node pkg="aquaautopilot" type="straight_with_dz.py" name="straight_with_dz">
+    <param name="dz"                value="$(arg dz)" />
+    <param name="forward_speed"     value="$(arg forward_speed)" />
+    <param name="forward_dt_in_sec" value="$(arg forward_dt_in_sec)" />
+ </node>
+
+</launch>

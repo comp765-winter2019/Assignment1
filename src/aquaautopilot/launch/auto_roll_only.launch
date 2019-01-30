@@ -1,0 +1,10 @@
+<launch>
+	<node pkg="aquaautopilot" type="local_autopilot_node" name="localAP">
+	  <param name="KSPEED" value="0.0"/>
+	  <param name="KHEAVE" value="0.0"/>
+	  <param name="KR" value="-1.0"/>
+	  <param name="KP" value="0.0"/>
+	  <param name="KY" value="0.0"/>
+	 
+	</node>
+</launch>

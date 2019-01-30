@@ -1,0 +1,10 @@
+syntax: regexp
+.orig$
+~$
+.o$
+^bin/
+^build/
+^docs/
+^cfg/cpp/
+.cfgc$
+cmake_install.cmake$

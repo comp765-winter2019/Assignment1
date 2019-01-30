@@ -1,0 +1,8 @@
+<launch>
+  <node pkg="aqua_gait" type="aqua_state_reparameterizer.py" name="aqua_state_reparameterizer" output="screen">
+    <param name="target_roll_deg" value="90.0" />
+    <param name="target_pitch_deg" value="0.0" />
+    <param name="target_yaw_deg" value="90.0" />
+    <param name="target_depth_m" value="2.5" />
+  </node>
+</launch>

@@ -1,0 +1,12 @@
+^src/aquaautopilot/
+.cfgc$
+^docs/
+^cfg/cpp/
+^build/
+^bin/
+^msg_gen/
+~$
+.pyc$
+.orig.py$
+.swp$
+.orig$

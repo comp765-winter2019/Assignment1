@@ -1,0 +1,50 @@
+<launch>
+
+  <include file="$(find aqua_gazebo)/launch/aqua.launch"/>
+  <include file="$(find aquaautopilot)/launch/auto.launch"/>
+  
+  <node pkg="aqua_gait" type="hover_midoff_node" name="hover_midoff_node" output="log" />
+  <node pkg="aqua_gait" type="drift_policy.py" name="drift_policy" args="-a" output="log" />
+  <node pkg="aqua_gait" type="drift_critic.py" name="drift_critic" output="log" />
+  <node pkg="aqua_gait" type="drift_learner.py" name="drift_learner" output="log" />
+
+<!--
+Start the controller by hand once everyone else has initiated
+rosrun aqua_rl aqua_rl_controller _run_live:='false' _episode_step_duration:=0.05
+  <node pkg="aqua_rl" type="aqua_rl_controller" name="aqua_rl_controller" output="log">
+    <param name="run_live" value="false" />
+    <param name="episode_step_duration" value="0.1" />
+  </node>
+-->
+
+<arg name="bag.name" default="/localdata/anqixu/DriftLearner/DriftLearner"/>
+<arg name="bag.topics"
+     default=
+     "
+/aqua/state
+/aqua/periodic_leg_command
+/aqua/target_pose
+/aqua/command
+/aqua/health
+/aqua/autopilot/status
+/aqua_rl/state
+/aqua_rl/new_episode
+/aqua_rl/run_live
+/aqua_rl/step
+/aqua_rl/reward
+/aqua_rl/terminate_episode
+/aqua_rl/critic_state
+/aqua_rl/learner_state
+/clock
+/rosout
+/rosout_agg
+/tf
+/tf_static
+     "/>
+
+<!--
+-->
+
+  <node pkg="rosbag" type="record" name="record" args="--output-prefix=$(arg bag.name) $(arg bag.topics)" />
+</launch>
+

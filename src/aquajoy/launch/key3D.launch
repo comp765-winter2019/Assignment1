@@ -1,0 +1,7 @@
+<launch>
+  <node pkg="aquajoy" type="aqua_key3D" name="aqua_key3D">
+    <param name="angular_step" value="10.0" />
+    <param name="linear_step" value="0.1" />
+    <param name="depth_step" value="0.1" />
+  </node>
+</launch>

@@ -1,0 +1,19 @@
+<launch>
+<arg name="bag.name" default="/data/uberpilot_"/>
+<arg name="bag.topics" 
+     default=
+     "/aqua/positioning/angular_velocity
+      /aqua/autopilot/status
+      /aqua/target_pose
+      /aqua/command 
+      /aqua/state 
+      /aqua/imu 
+      /aqua/health 
+      /tf 
+      /aqua/filtered_depth
+      /aqua/tags
+      /aqua/ui/msg
+      rosout_agg"/>
+<node pkg="rosbag" type="record" name="record" args="--output-prefix=$(arg bag.name)  $(arg bag.topics) "/>
+
+</launch>

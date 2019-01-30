@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<package>
+  <name>aqua_gait</name>
+  <version>1.0.0</version>
+  <description>This package contains part of RoboDevel's UnderwaterSwimmer logic (hover_midoff_node) that was ported to ROS, along with various GUIs and support scripts.</description>
+
+  <license>BSD</license>
+
+  <author email="anqixu@cim.mcgill.ca">Anqi Xu</author>
+  <maintainer email="gamboa@cim.mcgill.ca">Juan Camilo Gamboa Higuera</maintainer>
+  <maintainer email="anqixu@cim.mcgill.ca">Anqi Xu</maintainer>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>aquacore</build_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>rospy</build_depend>
+  <build_depend>geometry_msgs</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <build_depend>std_msgs</build_depend>
+
+  <run_depend>aquacore</run_depend>
+  <run_depend>roscpp</run_depend>
+  <run_depend>rospy</run_depend>
+  <run_depend>geometry_msgs</run_depend>
+  <run_depend>sensor_msgs</run_depend>
+  <run_depend>std_msgs</run_depend>
+
+</package>

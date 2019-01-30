@@ -1,0 +1,23 @@
+<launch>
+  <arg name="bagfile" default="/localdata/anqixu/drift_policy_2014-09-01-21-10-51.bag" />
+  <arg name="episode" default="1" />
+  <arg name="topic" default="/aqua/target_pose" />
+
+  <!-- DOES NOT WORK SINCE DOES NOT HAVE GAZEBO SERVICES node pkg="aqua_utils" type="aquahw_emulator.py" name="aquahw_emulator" output="log" / -->
+  
+  <include file="$(find aqua_gazebo)/launch/aqua.launch"/>
+  <include file="$(find aquaautopilot)/launch/auto.launch"/>
+  
+  <node pkg="aqua_gait" type="hover_midoff_node" name="hover_midoff_node" output="log" />
+  <node pkg="aqua_gait" type="playback_policy_critic.py" name="playback_policy_critic" args="-b $(arg bagfile) -e $(arg episode) -t $(arg topic)" output="screen" />
+  <node pkg="aqua_gait" type="drift_learner.py" name="drift_learner" output="log" />
+
+<!--
+Start the controller by hand once everyone else has initiated
+  <node pkg="aqua_rl" type="aqua_rl_controller" name="aqua_rl_controller" output="log">
+    <param name="run_live" value="false" />
+    <param name="episode_step_duration" value="0.1" />
+  </node>
+-->
+
+</launch>

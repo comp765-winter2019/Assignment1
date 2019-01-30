@@ -1,0 +1,7 @@
+<launch>
+
+<include file="$(find aqua_gazebo)/launch/aqua.launch"/>
+<include file="$(find aquaautopilot)/launch/auto.launch"/>
+<node name="hover_midoff" pkg="aqua_gait" type="hover_midoff_node"/>
+
+</launch>

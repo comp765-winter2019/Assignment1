@@ -1,0 +1,49 @@
+<launch>
+
+<arg name="duration" default="30"/>
+
+<arg name="RP" default="0.2"/>
+<arg name="RD" default="0.0"/>
+<arg name="RCONST" default="0.0"/>
+
+<arg name="PP" default="2.0"/>
+<arg name="PD" default="0.0"/>
+
+<arg name="YP" default="-3.5"/>
+<arg name="YI" default="0.0"/>
+<arg name="YD" default="0.0"/>
+
+<arg name="DP" default="-1.3"/>
+<arg name="DD" default="0.0"/>
+
+<!-- Never ever forget to copy the logger -->
+<include file="$(find aquaautopilot)/launch/auto_helpers.launch"/>
+
+<!-- The autopilot node with gains copied from the MRL Wiki --> 
+  <node pkg="aquaautopilot" type="local_autopilot_node" name="localAP">
+
+         <remap from="/aqua/filtered_depth" to="/AP_filtered_depth"/>
+
+         <param name="ROLL_P_GAIN" value="$(arg RP)"/>
+         <param name="PITCH_P_GAIN" value="$(arg PP)"/>
+         <param name="YAW_P_GAIN" value="$(arg YP)"/>
+         
+         <param name="YAW_I_GAIN" value="$(arg YI)"/>
+        
+         <param name="ROLL_D_GAIN" value="$(arg RD)"/>
+         <param name="PITCH_D_GAIN" value="$(arg PD)"/>
+         <param name="YAW_D_GAIN" value="$(arg YD)"/>
+         
+         <param name="ROLL_CONST_GAIN" value="$(arg RCONST)"/>
+        
+         <param name="KDEPTH"    value="$(arg DP)" />
+         <param name="DEPTH_D_GAIN" value="$(arg DD)" />
+         <param name="DEPTH_D_FILTER_PERIOD" value="0.6" />
+  </node>
+  
+<!-- Client to send continuous stream of commands -->
+  <node pkg="aquaautopilot" type="lateral_angles.py" name="sideways_heave_client" output="screen">
+        <param name="duration" type="double" value="$(arg duration)"/>
+  </node>
+  
+</launch>

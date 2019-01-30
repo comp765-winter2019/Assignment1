@@ -1,0 +1,14 @@
+<launch>
+
+<arg name="duration" default="30"/>
+
+<include file="$(find aquaautopilot)/launch/auto.launch"/>
+  
+<!-- Client to send continuous stream of commands -->
+  <node pkg="aquaautopilot" type="grid_param_search_angles.py" name="grid_search_client" output="screen">
+        <param name="duration" type="double" value="$(arg duration)"/>
+        <param name="search_parameter" type="string" value="ROLL_P_GAIN"/>
+        <rosparam param = "val_options">[0.1, 0.15, 0.22, 0.35, 0.55, 1.0]</rosparam>
+  </node>
+  
+</launch>

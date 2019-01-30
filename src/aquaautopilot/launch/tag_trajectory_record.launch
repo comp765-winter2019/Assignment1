@@ -1,0 +1,8 @@
+<launch>
+
+   <include file="$(find ar_recog)/launch/david/ar_compute_pose.launch"/>
+
+   <node pkg="aquaautopilot" type="tag_trajectory_record.py" name="tag_trajectory_record" required="true">
+      <param name="trajectory_filename" value="$(find aquaautopilot)/trajectories/traj1.p"/>
+   </node>
+</launch>

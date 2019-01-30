@@ -1,0 +1,44 @@
+<launch>
+  <node pkg="aqua_gait" type="drift_policy.py" name="drift_policy" args="-a -s" output="screen" />
+  <node pkg="aqua_gait" type="drift_critic.py" name="drift_critic" output="screen" />
+  <node pkg="aqua_gait" type="drift_learner.py" name="drift_learner" args="-t none" output="screen" />
+
+<!--
+Start the controller by hand once everyone else has initiated
+rosrun aqua_rl aqua_rl_controller _run_live:='true' _wait_for_trigger:='true'
+  <node pkg="aqua_rl" type="aqua_rl_controller" name="aqua_rl_controller" output="log">
+    <param name="run_live" value="true" />
+    <param name="wait_for_trigger" value="true" />
+  </node>
+-->
+
+<arg name="bag.name.offboard" default="/localdata/aqua_pool_play_drift_policy"/>
+<arg name="bag.topics.offboard"
+     default=
+     "
+/aqua/state
+/aqua/periodic_leg_command
+/aqua/target_pose
+/aqua/command
+/aqua/health
+/aqua/autopilot/status
+/aqua_rl/state
+/aqua_rl/new_episode
+/aqua_rl/run_live
+/aqua_rl/step
+/aqua_rl/reward
+/aqua_rl/terminate_episode
+/aqua_rl/critic_state
+/aqua_rl/learner_state
+/clock
+/rosout
+/rosout_agg
+/tf
+/tf_static
+     "/>
+
+<!--
+-->
+
+  <node pkg="rosbag" type="record" name="record_offboard" args="--output-prefix=$(arg bag.name.offboard) $(arg bag.topics.offboard)" />
+</launch>

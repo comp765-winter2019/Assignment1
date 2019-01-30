@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<package>
+  <name>aquajoy</name>
+  <version>1.0.0</version>
+  <description>Nodes for controlling Aqua via keyboard and gamepad.</description>
+
+  <license>BSD</license>
+  <author email="dmeger@cim.mcgill.ca">David Meger</author>
+  <author email="anqixu@cim.mcgill.ca">Anqi Xu</author>
+  <maintainer email="dmeger@cim.mcgill.ca">David Meger</maintainer>
+  <maintainer email="anqixu@cim.mcgill.ca">Anqi Xu</maintainer>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>roscpp</build_depend>
+  <build_depend>dynamic_reconfigure</build_depend>
+  <build_depend>aquacore</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <build_depend>geometry_msgs</build_depend>
+  <build_depend>angles</build_depend>
+  <build_depend>tf</build_depend>
+  <build_depend>message_generation</build_depend>
+  
+  <run_depend>roscpp</run_depend>
+  <run_depend>dynamic_reconfigure</run_depend>
+  <run_depend>aquacore</run_depend>
+  <run_depend>sensor_msgs</run_depend>
+  <run_depend>geometry_msgs</run_depend>
+  <run_depend>angles</run_depend>
+  <run_depend>tf</run_depend>
+  <run_depend>message_runtime</run_depend>
+</package>

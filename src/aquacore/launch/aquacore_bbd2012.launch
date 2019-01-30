@@ -1,0 +1,31 @@
+<launch>
+  <node pkg="aquahw" type="aquahw" name="aquahw">
+    <param name="hostname" type="string" value="ramius"/>
+  </node>
+  <node pkg="uoled" type="uoled" name="uoled"> </node>
+<!--  <node pkg="uoled" type="display_depth" name="display_depth"> </node> -->
+<!--  <include file="$(find GPSModule)/launch/gps_box_big.launch"/> -->
+  <node pkg="xbee_module" type="xbee_node_api" name="xbee_node_api" args="$(find xbee_module)/ramius.properties" > </node>
+<!-- node pkg="aqua_debug_nodes" type="gps_display.py" name="aqua_debug_gps_display"> </node -->
+  <node pkg="aquaimu" type="aquaimu" name="aquaimu"> 
+    <param name="hostname"        value="192.168.2.43" 		type="str" />
+    <param name="port"            value="8500"         		type="str" />
+    <param name="rate"            value="50" 			type="int" />
+  </node>	  
+
+
+  <!-- Cameras -->
+  <include file="$(find aquacam)/launch/default.launch"/>
+
+  <!--AR Tag recognition -->
+  <include file="$(find ar_recog)/aqua/aqua.launch"/>
+  
+  <!--UI manager-->
+  <node pkg="aquauwui" type="manager" name="uimanager"> </node>
+
+  <!--Yogi's experiments manager-->
+  <!--node pkg="aqua_summarizer" type="sum_exp_manager" name="exp_manager"/-->
+
+  <!--Yiannis's experiments manager-->
+  <node pkg="yiannis_manager" type="yiannis_manager" name="yiannis_manager"/>
+</launch>

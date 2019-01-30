@@ -1,0 +1,4 @@
+<launch>
+	<node pkg="comp765_assign1" type="ground_truth_publisher" name="gt_pub" output="screen"/>
+	<node pkg="comp765_assign1" type="localizer_node" name="localizer" output="screen"/>
+</launch>

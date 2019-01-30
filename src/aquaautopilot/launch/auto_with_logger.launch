@@ -1,0 +1,4 @@
+<launch>
+	<include file="$(find aquaautopilot)/launch/logger.launch"/>
+	<include file="$(find aquaautopilot)/launch/auto.launch"/>
+</launch>

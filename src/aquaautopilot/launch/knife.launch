@@ -1,0 +1,30 @@
+<launch>
+
+<arg name="duration" default="15"/>
+
+<include file="$(find aquaautopilot)/launch/auto_helpers.launch"/>
+
+<!-- The autopilot node with gains copied from the MRL Wiki --> 
+  <node pkg="aquaautopilot" type="local_autopilot_node" name="localAP">
+
+
+	<remap from="/aqua/filtered_depth" to="/AP_filtered_depth"/>
+        <param name="ROLL_P_GAIN" value="1.0"/>
+        <param name="PITCH_P_GAIN" value="2.0"/>
+        <param name="YAW_P_GAIN" value="-3.5"/>
+        
+        <param name="ROLL_D_GAIN" value="0"/>
+        <param name="PITCH_D_GAIN" value="0"/>
+        <param name="YAW_D_GAIN" value="-1.5"/>
+        
+        <param name="KDEPTH"    value="-1.3" />
+         <param name="DEPTH_D_GAIN" value="-1.5" />
+         <param name="DEPTH_D_FILTER_PERIOD" value="0.6" />
+  </node>
+  
+<!-- Client to send continuous stream of commands -->
+  <node pkg="aquaautopilot" type="knife.py" name="knife_edge_client" output="screen">
+        <param name="duration" type="double" value="$(arg duration)"/>
+  </node>
+  
+</launch>

@@ -1,0 +1,39 @@
+<launch>
+  <node pkg="aquajoy" type="aqua_joy" name="aqua_joy" output="screen">
+    <remap from="joy" to="/joy" />
+    <remap from="command" to="/aqua/command" />
+    <remap from="target_pose" to="/aqua/target_pose" />
+    <remap from="get_state" to="/aqua/get_state" />
+    <remap from="set_autopilot_mode" to="/aqua/set_3Dauto_mode" />
+    <remap from="calibrate" to="/aqua/calibrate" />
+    <remap from="is_calibrated" to="/aqua/is_calibrated" />
+    <remap from="set_gait" to="/aqua/set_gait" />
+    <remap from="set_robodevel_autopilot_mode" to="/aqua/set_autopilot_mode" />
+        
+    <param name="joy_axis_deadzone" value="0.15" />
+    
+    <param name="max_speed_cmd" value="1.0" />
+    <param name="max_heave_cmd" value="1.0" />
+    <param name="max_roll_cmd"  value="1.0" />
+    <param name="max_pitch_cmd" value="1.0" />
+    <param name="max_yaw_cmd"   value="1.0" />
+
+    <param name="max_roll_pos"  value="90.0" />
+    <param name="max_pitch_pos" value="90.0" />
+    <param name="max_yaw_pos"   value="180.0" />
+
+    <param name="min_depth" value="1.0" />
+    <param name="max_depth" value="100.0" />
+    <param name="default_fixed_depth" value="-1.0" /> <!-- if set to <0 then initial fixed depth is robot's current depth -->
+
+    <param name="max_roll_vel"  value="300.0" />
+    <param name="max_pitch_vel" value="300.0" />
+    <param name="max_yaw_vel"   value="450.0" />
+
+    <param name="max_depth_vel" value="0.1" />
+  </node>
+
+  <node pkg="joy" type="joy_node" name="joy_node" output="screen">
+    <param name="dev" value="/dev/input/js1" />
+  </node>
+</launch>

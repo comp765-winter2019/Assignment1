@@ -1,0 +1,11 @@
+<launch>
+
+<!-- Never ever forget to copy the logger -->
+<include file="$(find aquaautopilot)/launch/logger.launch"/>
+
+<!-- A depth_filter specific to the AP -->
+<node pkg="aquadepth" type="depth_filter" name="AP_depth_filter">
+    <remap from="/aqua/filtered_depth" to="/AP_filtered_depth"/>
+</node>
+
+</launch>

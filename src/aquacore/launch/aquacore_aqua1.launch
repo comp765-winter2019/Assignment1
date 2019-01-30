@@ -1,0 +1,14 @@
+<launch>
+  <node pkg="aquahw" type="aquahw" name="aquahw" output="screen">
+    <param name="hostname" type="string" value="aquappp"/>
+  </node>
+  <node pkg="aquaimu" type="aquaimu" name="aquaimu"> 
+    <param name="hostname"        value="192.168.2.43" 		type="str" />
+    <param name="port"            value="8500"         		type="str" />
+    <param name="rate"            value="50" 			type="int" />
+  </node>	
+  
+  <!--UI manager-->
+  <node pkg="aquauwui" type="manager" name="uimanager"> </node>
+
+</launch>

@@ -1,0 +1,6 @@
+<launch>
+  <include file="$(find aqua_gazebo)/launch/headless.launch"/>
+  <node pkg="aqua_gait" type="plc_demo.py" name="plc_demo"/>
+  <node pkg="aqua_description" type="leg_state_publisher" name="leg_state_publisher"/>
+  <node name="aqua_viz" pkg="rviz" type="rviz" output="screen"/>
+</launch>

@@ -1,0 +1,16 @@
+<launch>
+	<node pkg="aquaautopilot" type="local_autopilot_node" name="localAP" output="screen">
+	      <param name="KSPEED" value="1.0"/>
+	      <param name="KHEAVE" value="1.0"/>
+	      <param name="KR" value="2.0"/>
+	      <param name="KP" value="2.0"/>
+	      <param name="KY" value="-3.0"/>
+	      <param name="MAX_SPEED" value="1.0"/>
+	      <param name="MAX_HEAVE" value="1.0"/>
+	      <param name="MAX_ROLL"  value="1.0"/>
+	      <param name="MAX_PITCH" value="1.0"/>
+	      <param name="MAX_YAW"   value="1.0"/>
+	      <param name="KDEPTH"    value="-1.0" />
+	      <param name="use_slerp" value="true" />
+	</node>
+</launch>
