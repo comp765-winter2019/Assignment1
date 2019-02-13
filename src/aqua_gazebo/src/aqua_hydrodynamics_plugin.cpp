@@ -67,11 +67,19 @@ double ComputeVolume(gazebo::physics::LinkPtr _link, ignition::math::Box &bbox){
             auto mesh_str = mesh_shape->GetMeshURI();
             gazebo::common::MeshManager *meshManager = gazebo::common::MeshManager::Instance();
             auto mesh = meshManager->GetMesh(mesh_str);
+#ifdef ROS_MELODIC
             auto _scale = mesh_shape->Size();
+#else
+            auto _scale = mesh_shape->GetSize().Ign();
+#endif
             // finally, we can do some computations on the mesh
             //std::cout<<"sub mesh count:"<<mesh->GetSubMeshCount()<<std::endl;
             double volume = 0;
+#ifdef ROS_MELODIC
             auto cog = _link->GetInertial()->CoG();
+#else
+            auto cog = _link->GetInertial()->GetCoG().Ign();
+#endif
 
             ignition::math::Vector3<double> _min(1e12,1e12,1e12),_max(-1e12,-1e12,-1e12);
             for (unsigned int i=0; i < mesh->GetSubMeshCount(); i++){
@@ -97,9 +105,14 @@ double ComputeVolume(gazebo::physics::LinkPtr _link, ignition::math::Box &bbox){
             bbox = ignition::math::Box(_min,_max);
             return volume;
         } else if(_shape->HasType(gazebo::physics::Base::BOX_SHAPE)){
-            auto box_shape = static_cast<gazebo::physics::BoxShape*>(_shape.get());  
+            auto box_shape = static_cast<gazebo::physics::BoxShape*>(_shape.get());
+#ifdef ROS_MELODIC
             auto _dims = box_shape->Size();
             return _dims.X()*_dims.Y()*_dims.Z();
+#else
+            auto _dims = box_shape->GetSize();
+            return _dims.x*_dims.y*_dims.z;
+#endif
         } else if (_shape->HasType(gazebo::physics::Base::SPHERE_SHAPE)){
             auto sphere_shape = static_cast<gazebo::physics::SphereShape*>(_shape.get());  
             double r = sphere_shape->GetRadius();
@@ -130,7 +143,11 @@ void ComputeHydrodynamicParams(gazebo::physics::LinkPtr _link, HydrodynamicParam
             // we will compute the kirchoff tensor for added mass effects and the drag tensor
             // using the method described in "Underwater Rigid Body Dynamics" by Stefan Weissman and Ulrich Pinkall
             auto mesh_shape = static_cast<gazebo::physics::MeshShape*>(_shape.get());
+#ifdef ROS_MELODIC
             auto _scale = mesh_shape->Size();
+#else
+            auto _scale = mesh_shape->GetSize().Ign();
+#endif
 
             // load mesh using common::MeshManager, since Gazebo does not allow us to access it :/
             auto mesh_str = mesh_shape->GetMeshURI();
@@ -139,7 +156,11 @@ void ComputeHydrodynamicParams(gazebo::physics::LinkPtr _link, HydrodynamicParam
 
             // finally, we can do some computations on the mesh
             double offset = 1e-9;
+#ifdef ROS_MELODIC
             auto cog = _link->GetInertial()->CoG();
+#else
+            auto cog = _link->GetInertial()->GetCoG().Ign();
+#endif
             for (unsigned int i=0; i < mesh->GetSubMeshCount(); i++){
                 auto submesh = mesh->GetSubMesh(i);
 
@@ -349,18 +370,6 @@ void AquaHydrodynamicsPlugin::InitDisturbances(
 void AquaHydrodynamicsPlugin::Load(
         gazebo::physics::ModelPtr _parent, sdf::ElementPtr _sdf){
     // get parameters from SDF file (gazebo tags in the URDF file)
-	if(_sdf->HasElement("planar")){
-		planar = _sdf->Get<bool>("planar");
-		if( planar )
-			ROS_INFO( "planar true ");
-		else
-			ROS_INFO( "planar false.");
-	}
-	else{
-		planar = false;
-		ROS_INFO("aqua hydrodynamics plugin missing <planar>, defaults to false.");
-	}
-
     if (_sdf->HasElement("robotNamespace"))
         robot_namespace = _sdf->Get<std::string>("robotNamespace") + "/";
     else{
@@ -376,14 +385,12 @@ void AquaHydrodynamicsPlugin::Load(
     }
     if (_sdf->HasElement("fluidDensity")){
         fluid_density = _sdf->Get<double>("fluidDensity");
-        ROS_INFO( "Density loaded from sdf was %f.", fluid_density );
     } else {
         fluid_density = 999.97;
         ROS_INFO("aqua hydrodynamics plugin missing <fluidDensity>, defaults to %f", fluid_density);
     }
     if (_sdf->HasElement("fluidViscosity")){
         fluid_viscosity = _sdf->Get<double>("fluidViscosity");
-        ROS_INFO( "Viscosity loaded from sdf was %f.", fluid_viscosity);
     } else {
         fluid_viscosity = 0.1;
         ROS_INFO("aqua hydrodynamics plugin missing <fluidViscosity>, defaults to %f", fluid_viscosity);
@@ -477,7 +484,11 @@ void AquaHydrodynamicsPlugin::Load(
     }
 
     // get leg dimensions
+#ifdef ROS_MELODIC
     leg_bbox = leg_links[0]->BoundingBox();
+#else
+    leg_bbox = leg_links[0]->GetBoundingBox().Ign();
+#endif
 
     // compute volume for the rest of the body (approximated by the bounding boxes)
     aqua_volume = 0;
@@ -505,20 +516,36 @@ void AquaHydrodynamicsPlugin::Load(
     std::cout<<"leg dimensions: "<<leg_bbox.XLength()<<", "<<leg_bbox.YLength()<<", "<<leg_bbox.ZLength()<<std::endl;
     std::cout<<"aqua dimensions: "<<aqua_bbox.XLength()<<", "<<aqua_bbox.YLength()<<", "<<aqua_bbox.ZLength()<<std::endl;
     std::cout<<"aqua volume: "<<aqua_volume<<" m^3 "<<std::endl;
+#ifdef ROS_MELODIC
     std::cout<<"aqua mass: "<<base_link->GetInertial()->Mass()<<" kg "<<std::endl;
     std::cout<<"combined leg volume: "<<6*leg_bbox.XLength()*leg_bbox.YLength()*leg_bbox.ZLength()<<" m^3 "<<std::endl;
     std::cout<<"combined leg mass: "<<6*leg_links[0]->GetInertial()->Mass()<<" kg "<<std::endl;
+#else
+    std::cout<<"aqua mass: "<<base_link->GetInertial()->GetMass()<<" kg "<<std::endl;
+    std::cout<<"combined leg volume: "<<6*leg_bbox.XLength()*leg_bbox.YLength()*leg_bbox.ZLength()<<" m^3 "<<std::endl;
+    std::cout<<"combined leg mass: "<<6*leg_links[0]->GetInertial()->GetMass()<<" kg "<<std::endl;
+#endif
+
 
     world = model->GetWorld();
+#ifdef ROS_MELODIC
     current_time = world->SimTime();
     last_update_time =  world->SimTime();
 
     initialPose = base_link->WorldCoGPose();
     current_pose = base_link->WorldPose();
+#else
+    current_time = world->GetSimTime();
+    last_update_time =  world->GetSimTime();
+
+    initialPose = base_link->GetWorldCoGPose().Ign();
+    current_pose = base_link->GetWorldPose().Ign();
+#endif
 }
 
 
 void AquaHydrodynamicsPlugin::OnUpdate(const gazebo::common::UpdateInfo & info){
+#ifdef ROS_MELODIC
     // get current pose
     current_pose = base_link->WorldPose();
     // get the current value of gravity
@@ -529,17 +556,37 @@ void AquaHydrodynamicsPlugin::OnUpdate(const gazebo::common::UpdateInfo & info){
     // get aqua's velocities
     auto aqua_lin_vel = current_pose.Rot().RotateVectorReverse(base_link->WorldCoGLinearVel());
     auto aqua_ang_vel = base_link->RelativeAngularVel();
+#else
+    // get current pose
+    current_pose = base_link->GetWorldPose().Ign();
+    // get the current value of gravity
+    auto gravity = world->GetPhysicsEngine()->GetGravity().Ign();
+    // get current simulation time
+    auto previous_time = current_time;
+    current_time = world->GetSimTime();
+    // get aqua's velocities
+    auto aqua_lin_vel = current_pose.Rot().RotateVectorReverse(base_link->GetWorldCoGLinearVel().Ign());
+    auto aqua_ang_vel = base_link->GetRelativeAngularVel().Ign();
+#endif
 
     for(auto &_link : model->GetLinks()){
         if(hydrodynamic_parameters.find(_link->GetName()) != hydrodynamic_parameters.end()){
             // get the hydrodynamic params
             auto Hp =  hydrodynamic_parameters[_link->GetName()];
             // get pose and cog
+#ifdef ROS_MELODIC
             auto link_pose = _link->WorldPose();
             auto cog = _link->GetInertial()->CoG();
             // get the relative velocities of the link
             auto w = _link->RelativeAngularVel();
             auto v = _link->RelativeLinearVel();
+#else
+            auto link_pose = _link->GetWorldPose().Ign();
+            auto cog = _link->GetInertial()->GetCoG().Ign();
+            // get the relative velocities of the link
+            auto w = _link->GetRelativeAngularVel().Ign();
+            auto v = _link->GetRelativeLinearVel().Ign();
+#endif
             //auto v = _link_pose.rot.RotateVectorReverse(_link->GetWorldCoGLinearVel());
             Eigen::Matrix<double,6,1> vel;
             Eigen::Matrix<double,6,1> sq_vel;
@@ -605,16 +652,28 @@ void AquaHydrodynamicsPlugin::OnUpdate(const gazebo::common::UpdateInfo & info){
 
     // get the motor commands here!
     for (size_t i=0;i<NUM_LEGS;++i) {
+#ifdef ROS_MELODIC
         double joint_angle = std::fmod(motor_joints[i]->Position(1), TWO_M_PI);
+#else
+        double joint_angle = std::fmod(motor_joints[i]->GetAngle(1).Radian(),TWO_M_PI);
+#endif
         target_angles[i] = std::fmod(target_angles[i],TWO_M_PI);
 
         //---------------------------------- THRUST MODEL --------------------------------------//
         // here we have the thrust model of [Giguère et al., 2006], [Plamondon & Nahon, 2009], or [Georgiades, 2005]
+#ifdef ROS_MELODIC
         auto leg_velocity = leg_links[i]->RelativeLinearVel();
+#else
+        auto leg_velocity = leg_links[i]->GetRelativeLinearVel();
+#endif
 
         // just for fun, if the leg is above the surface of water (probably negligible at the given air density)
         double rho = 1.225;
-        if(leg_links[i]->WorldCoGPose().Pos().Z() <= surface_level){ 
+#ifdef ROS_MELODIC
+        if(leg_links[i]->WorldCoGPose().Pos().Z() <= surface_level){
+#else
+        if(leg_links[i]->GetWorldCoGPose().pos.z <= surface_level){
+#endif
            // below surface of water
             rho = fluid_density;
         } 
@@ -643,9 +702,14 @@ void AquaHydrodynamicsPlugin::OnUpdate(const gazebo::common::UpdateInfo & info){
         motor_joints[i]->SetForce(0, pid[i].GetCmd());
     }
 
+#ifdef ROS_MELODIC
     auto base_link_pose = base_link->WorldPose();
     double base_link_depth = base_link_pose.Pos().Z();
-    if(base_link_depth <= surface_level){ 
+#else
+    auto base_link_pose = base_link->GetWorldPose();
+    double base_link_depth = base_link_pose.pos.z;
+#endif
+    if(base_link_depth <= surface_level){
         // add randomized external disturbances to base link
         Eigen::Vector3d accum_vel = Eigen::Vector3d::Zero();
         auto n=disturbance_spectrum.freqs.size();
@@ -660,7 +724,11 @@ void AquaHydrodynamicsPlugin::OnUpdate(const gazebo::common::UpdateInfo & info){
             vel = vel.array() + vel.minCoeff()*ampl*std::sin(TWO_M_PI*freq*t);
             accum_vel += vel/n;
         }
+#ifdef ROS_MELODIC
         double m = base_link->GetInertial()->Mass();
+#else
+        double m = base_link->GetInertial()->GetMass();
+#endif
         auto accel = (accum_vel-prev_vel).array()/dt;
         accel.cwiseMin(Eigen::Vector3d::Ones().array()*0.0005);
         accel.cwiseMax(-Eigen::Vector3d::Ones().array()*0.0005);
@@ -669,18 +737,6 @@ void AquaHydrodynamicsPlugin::OnUpdate(const gazebo::common::UpdateInfo & info){
         base_link->AddForce(
             ignition::math::Vector3<double>(
                 0.1*dist_force(0), 0.1*dist_force(1), 0.1*dist_force(2)));
-    }
-
-    if( planar ){
-        auto wp = base_link->WorldPose();
-	    auto ori = wp.Rot();
-	    auto eul_vec =  wp.Rot().Euler();
-	    eul_vec.Set( 0.0, 0.0, eul_vec[2] );
-	    wp.Rot().Euler( eul_vec );
-
-	    wp.Pos().Set( wp.Pos()[0], wp.Pos()[1], -1.0 );
-
-	    base_link->SetWorldPose( wp );
     }
 }
 
@@ -698,7 +754,6 @@ void AquaHydrodynamicsPlugin::DynamicReconfigureCallback(aqua_gazebo::Hydrodynam
     fluid_viscosity = config.viscosity;
     wobble = config.wobble;
     drag_scaling = config.drag_scaling;
-
     for( auto it = hydrodynamic_parameters.begin(); it != hydrodynamic_parameters.end(); it++){
         aqua_gazebo::HydrodynamicsParams params;
         params.header.stamp = params_list.header.stamp;

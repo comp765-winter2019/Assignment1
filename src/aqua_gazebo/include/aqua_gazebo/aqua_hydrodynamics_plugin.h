@@ -49,6 +49,10 @@
 #include <aquacore/GetTargetLegAngles.h>
 #include <aquacore/SetTargetLegAngles.h>
 
+#if ROS_VERSION_MINIMUM(1, 14, 3) // if current ros version is >= 1.14.3 (Melodic)
+#define ROS_MELODIC
+#endif
+
 #define TWO_M_PI 2*M_PI
 #define NUM_LEGS 6
 const char* JOINT_NAMES[NUM_LEGS] =
@@ -146,7 +150,6 @@ class AquaHydrodynamicsPlugin: public gazebo::ModelPlugin
 
     std::string robot_namespace;
     double surface_level, fluid_density, aqua_volume, fluid_viscosity, wobble,drag_scaling;
-    bool planar;
     ignition::math::Vector3<double> drag_coeffs, leg_drag_coeffs;
     ignition::math::Box leg_bbox, aqua_bbox;
     std::map<std::string,HydrodynamicParameters> hydrodynamic_parameters;

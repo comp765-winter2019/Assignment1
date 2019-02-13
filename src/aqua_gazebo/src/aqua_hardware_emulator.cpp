@@ -166,14 +166,26 @@ void AquaHWPlugin::Load(gazebo::physics::ModelPtr _parent, sdf::ElementPtr _sdf)
 
 void AquaHWPlugin::OnUpdate(const gazebo::common::UpdateInfo & info){
     auto previous_time = current_time;
+#ifdef ROS_MELODIC
     current_time = model->GetWorld()->SimTime();
+#else
+    current_time = model->GetWorld()->GetSimTime();
+#endif
 
     // get joint positions
     for (int i=0; i< NUM_LEGS; i++){
+#ifdef ROS_MELODIC
         health_msg.positions[i] = model->GetJoint(JOINT_NAMES[i])->Position(1);
+#else
+        health_msg.positions[i] = model->GetJoint(JOINT_NAMES[i])->GetAngle(1).Radian();
+#endif
     }
 
+#ifdef ROS_MELODIC
     state_msg.Depth = surface_level - model->GetLink("depth_sensor")->WorldPose().Pos().Z();
+#else
+    state_msg.Depth = surface_level - model->GetLink("depth_sensor")->GetWorldPose().pos.z;
+#endif
 
     // add some noise
     state_msg.Depth += gaussian_noise(gen);
@@ -572,9 +584,10 @@ void AquaHWPlugin::reset_world(const std_msgs::Time::ConstPtr &msg){
    world->SetPaused(true);
    // add small random noise to the initial state
    auto base_link = model->GetLink("aqua_base");
+#ifdef ROS_MELODIC
    auto p0 = base_link->InitialRelativePose();
    auto p = ignition::math::Pose3d(p0);
-   p.Pos().Set( p.Pos().X() + ignition::math::Rand::DblNormal(0,0.01),
+    p.Pos().Set( p.Pos().X() + ignition::math::Rand::DblNormal(0,0.01),
               p.Pos().Y() + ignition::math::Rand::DblNormal(0,0.01),
               p.Pos().Z() + ignition::math::Rand::DblNormal(0,0.01));
    auto rot = p.Rot().Euler();
@@ -582,6 +595,18 @@ void AquaHWPlugin::reset_world(const std_msgs::Time::ConstPtr &msg){
             rot.Y() + ignition::math::Rand::DblNormal(0,0.01),
             rot.Z() + ignition::math::Rand::DblNormal(0,0.01));
    p.Rot().Euler(rot);
+#else
+   auto p0 = base_link->GetInitialRelativePose();
+   auto p = gazebo::math::Pose(p0);
+    p.pos.Set( p.pos.x + gazebo::math::Rand::GetDblNormal(0,0.01),
+               p.pos.y + gazebo::math::Rand::GetDblNormal(0,0.01),
+               p.pos.z + gazebo::math::Rand::GetDblNormal(0,0.01));
+    auto rot = p.rot.GetAsEuler();
+    rot.Set( rot.x + gazebo::math::Rand::GetDblNormal(0,0.01),
+             rot.y + gazebo::math::Rand::GetDblNormal(0,0.01),
+             rot.z + gazebo::math::Rand::GetDblNormal(0,0.01));
+    p.rot.SetFromEuler(rot);
+#endif
    base_link->SetInitialRelativePose(p);
    world->ResetEntities(gazebo::physics::Base::ENTITY);
    world->SetPaused(false);
@@ -620,7 +645,11 @@ bool AquaHWPlugin::step_simulation(aquacore::StepSimulation::Request  &req, aqua
 { 
     if (_debug_print)
         ROS_INFO("Stepping simulation for [%lf] seconds",req.duration);
+#ifdef ROS_MELODIC
     int n_steps = std::floor(req.duration/(world->Physics()->GetMaxStepSize()));
+#else
+    int n_steps = std::floor(req.duration/(world->GetPhysicsEngine()->GetMaxStepSize()));
+#endif
     n_steps = (n_steps>0)?n_steps:1;
     integrated_velocity.fill(0.0);
     world->Step(n_steps);
@@ -636,7 +665,11 @@ bool AquaHWPlugin::step_simulation(aquacore::StepSimulation::Request  &req, aqua
         res.leg_offsets[i] = latest_periodic_leg_command.leg_offsets[i];
         res.phase_offsets[i] = latest_periodic_leg_command.phase_offsets[i];
         res.phase_offsets[i] = latest_periodic_leg_command.phase_offsets[i];
+#ifdef ROS_MELODIC
         res.joint_angles[i] = model->GetJoint(JOINT_NAMES[i])->Position(1);
+#else
+        res.joint_angles[i] = model->GetJoint(JOINT_NAMES[i])->GetAngle(1).Radian();
+#endif
     }
     state_pub.publish(state_msg);
 
@@ -648,7 +681,11 @@ bool AquaHWPlugin::run_simulation_until_time(aquacore::RunSimulationUntilTime::R
     if (_debug_print)
         ROS_INFO_STREAM("Running simulation until "<<req.desired_time);
     double duration  = (req.desired_time - ros::Time::now()).toSec();
+#ifdef ROS_MELODIC
     int n_steps = std::floor(duration/(world->Physics()->GetMaxStepSize()));
+#else
+    int n_steps = std::floor(duration/(world->GetPhysicsEngine()->GetMaxStepSize()));
+#endif
     n_steps = (n_steps>0)?n_steps:1;
     integrated_velocity.fill(0.0);
     world->Step(n_steps);
@@ -665,7 +702,11 @@ bool AquaHWPlugin::run_simulation_until_time(aquacore::RunSimulationUntilTime::R
         res.leg_offsets[i] = latest_periodic_leg_command.leg_offsets[i];
         res.phase_offsets[i] = latest_periodic_leg_command.phase_offsets[i];
         res.phase_offsets[i] = latest_periodic_leg_command.phase_offsets[i];
+#ifdef ROS_MELODIC
         res.joint_angles[i] = model->GetJoint(JOINT_NAMES[i])->Position(1);
+#else
+        res.joint_angles[i] = model->GetJoint(JOINT_NAMES[i])->GetAngle(1).Radian();
+#endif
     }
 
     state_pub.publish(state_msg);

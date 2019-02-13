@@ -86,7 +86,7 @@ public:
     geometry_msgs::Pose pose = ground_truth_location.pose;
     pose.position.z = 0;
 
-    auto gt_poses_size = gt_pose_array_msg.poses.size();
+    int gt_poses_size = gt_pose_array_msg.poses.size();
     if (gt_poses_size > 0)
     {
       geometry_msgs::Point current_position = pose.position;
@@ -144,7 +144,7 @@ public:
     pose.position.z = 0;
     pose.position.y = -pose.position.y;
 
-    auto estimate_poses_size = estimate_pose_array_msg.poses.size();
+    int estimate_poses_size = estimate_pose_array_msg.poses.size();
     if (estimate_poses_size > 0)
     {
       geometry_msgs::Point current_position = pose.position;

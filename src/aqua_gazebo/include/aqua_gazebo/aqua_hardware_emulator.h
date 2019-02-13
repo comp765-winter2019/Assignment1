@@ -78,6 +78,10 @@
 #include <aquacore/StepSimulation.h>
 #include <aquacore/RunSimulationUntilTime.h>
 
+#if ROS_VERSION_MINIMUM(1, 14, 3) // if current ros version is >= 1.14.3 (Melodic)
+#define ROS_MELODIC
+#endif
+
 #include <aqua_gait/Gaits.hpp>
 
 #define NUM_LEGS 6
