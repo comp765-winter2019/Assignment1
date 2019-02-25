@@ -92,5 +92,5 @@ Useful C++ tools:
 - std::normal_distribution
 - std::uniform_real_distribution
 - cv::Mat robot_image = cv_bridge::toCvCopy(robo_img_msg, sensor_msgs::image_encodings::BGR8)->image;
-- cv::Vec3b predicted_color = robot_image.at<cv::Vec3b>(probe_pixel_y, probe_pixel_x);
+- cv::Vec3b predicted_color = robot_image.at`<cv::Vec3b>`(probe_pixel_y, probe_pixel_x);
  
